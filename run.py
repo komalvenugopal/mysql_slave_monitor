@@ -9,7 +9,7 @@ from checkers.replication import ReplicationChecker
 
 if __name__ == '__main__':
     directory = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
-    config = yaml.load((open(os.path.join(directory, 'config.yml'), 'r').read()))
+    config = yaml.load(open(os.path.join(directory, 'config.yml'), 'r').read(),Loader=yaml.Loader)
 
     logging.basicConfig(filename=os.path.join(directory, 'replication.log'),level=logging.DEBUG)
     logging.info('Checker started at: ' + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))

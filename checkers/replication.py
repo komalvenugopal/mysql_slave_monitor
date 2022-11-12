@@ -31,7 +31,7 @@ class ReplicationChecker(object):
                 host=self.host,
                 port=self.port
             )
-
+            logging.debug('Conected to MYSQL')
             cursor = cnx.cursor()
             query = 'SHOW SLAVE STATUS;'
 
@@ -40,7 +40,7 @@ class ReplicationChecker(object):
             last_error_no = replication_status_row[18]
             last_error = replication_status_row[19]
             seconds_behind_master = replication_status_row[32]
-            slave_sql_running_state = replication_status_row[44]
+            slave_sql_running_state = replication_status_row[10]
 
             logging.info('Last Error No: ' + str(last_error_no))
             logging.info('Last Error: ' + str(last_error_no))
@@ -145,7 +145,7 @@ class ReplicationChecker(object):
 
             for notifier in self.notifiers:
                 if(notifier=="slack_url"):
-                    message = construct_message(long_message, status, short_message, time_string)
+                    message = self.construct_message(long_message, status, short_message, time_string)
                     request = requests.post(self.notifiers["slack_url"], data=message)
                 elif(notifier=="lambda_function"):
                     lambda_payload = {
@@ -157,7 +157,7 @@ class ReplicationChecker(object):
         self.messages = []
         
 
-    def construct_message(long_message, status, short_message, time_string):
+    def construct_message(self, long_message, status, short_message, time_string):
         message = '''
             {
                 "text": "%s",
