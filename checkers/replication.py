@@ -54,9 +54,13 @@ class ReplicationChecker(object):
             else:
                 self.confirm_normality()
         except Exception as error:
+            logging.error(error)
             self.raise_exception(error)
         if self.messages:
-            self.trigger_notifications()
+            try:
+                self.trigger_notifications()
+            except Exception as error:
+                logging.error(error)
 
     def raise_replication_error(self, last_error, slave_sql_running_state):
         self.messages.append({
