@@ -142,7 +142,7 @@ class ReplicationChecker(object):
     def trigger_notifications(self):
         lambda_client = boto3.client('lambda')
         response = requests.get('http://169.254.169.254/latest/meta-data/public-ipv4')
-        self.public_ip = response.text
+        self.public_ip = str(response.text)
 
         for message in self.messages:
             long_message = message['long_message']
@@ -155,7 +155,6 @@ class ReplicationChecker(object):
                     for channel in self.notifiers["slack"]["channels"]:
                         message = self.construct_message(long_message, status, short_message, time_string, channel)
                         response = requests.post(self.notifiers["slack"]["url"], data=message)
-                        logging.info('Slack Response: ' + response)
     
                 elif(notifier=="lambda_function"):
                     lambda_payload = {
