@@ -14,16 +14,16 @@ if __name__ == '__main__':
     logging.basicConfig(filename=os.path.join(directory, 'replication.log'),level=logging.DEBUG)
     logging.info('Checker started at: ' + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
-    checker = ReplicationChecker(
-        project_directory=directory,
-        lag_interval=300,
-        lag_duration=1800,
-        user=config['mysql']['user'],
-        password=config['mysql']['password'],
-        host=config['mysql']['host'],
-        port=config['mysql']['port'],
-        notifiers=config['notifiers']
-    )
-    
-    checker.check()
-    logging.info('Checker ended at: ' + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    for host in config['mysql']['hosts']:
+        checker = ReplicationChecker(
+            host=host,
+            user=config['mysql']['user'],
+            password=config['mysql']['password'],
+            port=config['mysql']['port'],
+            project_directory=directory,
+            lag_interval=300,
+            lag_duration=1800,
+            notifiers=config['notifiers']
+        )
+        checker.check()
+        logging.info({"Checker ended for %s at: "}.format(host) + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
