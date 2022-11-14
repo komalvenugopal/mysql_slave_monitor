@@ -141,6 +141,9 @@ class ReplicationChecker(object):
 
     def trigger_notifications(self):
         lambda_client = boto3.client('lambda')
+        response = requests.get('http://169.254.169.254/latest/meta-data/public-ipv4')
+        self.public_ip = response.text
+
         for message in self.messages:
             long_message = message['long_message']
             status = message['status']
@@ -182,11 +185,16 @@ class ReplicationChecker(object):
                                 "title": "Time",
                                 "value": "%s",
                                 "short": true
+                            },
+                            {
+                                "title": "Public IP",
+                                "value": "%s",
+                                "short": true
                             }
                         ]
                     }
                 ],
                 "channel": "%s"
             }
-        ''' % (long_message, status, short_message, time_string, channel)
+        ''' % (long_message, status, short_message, time_string, self.public_ip, channel)
         return message
