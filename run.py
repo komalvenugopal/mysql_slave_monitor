@@ -26,4 +26,4 @@ if __name__ == '__main__':
             notifiers=config['notifiers']
         )
         checker.check()
-        logging.info({"Checker ended for %s at: "}.format(host) + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+        logging.info("Checker ended at" + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')+ "for " + host)
