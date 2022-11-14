@@ -148,9 +148,12 @@ class ReplicationChecker(object):
             time_string = message['time_string']       
 
             for notifier in self.notifiers:
-                if(notifier=="slack_url"):
-                    message = self.construct_message(long_message, status, short_message, time_string)
-                    request = requests.post(self.notifiers["slack_url"], data=message)
+                if(notifier=="slack"):
+                    for channel in self.notifiers["slack"]["channels"]:
+                        message = self.construct_message(long_message, status, short_message, time_string, channel)
+                        response = requests.post(self.notifiers["slack"]["url"], data=message)
+                        logging.info('Slack Response: ' + response)
+    
                 elif(notifier=="lambda_function"):
                     lambda_payload = {
                         "name": short_message,
@@ -161,7 +164,7 @@ class ReplicationChecker(object):
         self.messages = []
         
 
-    def construct_message(self, long_message, status, short_message, time_string):
+    def construct_message(self, long_message, status, short_message, time_string, channel):
         message = '''
             {
                 "text": "%s",
@@ -182,7 +185,8 @@ class ReplicationChecker(object):
                             }
                         ]
                     }
-                ]
+                ],
+                "channel": "%s"
             }
-        ''' % (long_message, status, short_message, time_string)
+        ''' % (long_message, status, short_message, time_string, channel)
         return message
